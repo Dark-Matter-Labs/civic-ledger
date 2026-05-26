@@ -1,0 +1,1501 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Civic Ledger | From static permits to conditional agreements</title>
+<meta name="description" content="Civic Ledger is an AI supported permissioning system that helps cities turn citizen intent into structured, negotiable and auditable agreements for shared urban assets." />
+<meta name="keywords" content="civic technology, public space, urban governance, permissioning, adaptive governance, AI for government, shared urban assets, civic infrastructure" />
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..600,30..100&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          paper:      '#F6F3EB',
+          'paper-2':  '#EFEBDF',
+          'paper-3':  '#F2EEE3',
+          'paper-4':  '#EDE9DD',
+          ink:        '#0E1B2C',
+          'ink-soft': '#2A3A52',
+          mute:       '#6B7280',
+          rule:       '#D8D3C4',
+          'rule-2':   '#E8E3D3',
+          accent:     '#2E4FA8',
+          'accent-2': '#B8C4DD',
+          lav:        '#6E5C9C',
+          'lav-2':    '#D6CFE5',
+          live:       '#C8442D',
+        },
+        fontFamily: {
+          display: ['Fraunces', 'Georgia', 'serif'],
+          sans:    ['"IBM Plex Sans"', 'system-ui', 'sans-serif'],
+          mono:    ['"IBM Plex Mono"', 'ui-monospace', 'monospace'],
+        },
+        maxWidth: { page: '1240px' },
+      },
+    },
+  }
+</script>
+
+<style>
+  :root { color-scheme: light; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    color: #0E1B2C;
+    background: #F6F3EB;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ─── Paper grain (whole page) ────────────────────────────── */
+  .grain::before {
+    content: ""; position: fixed; inset: 0;
+    pointer-events: none; z-index: 100;
+    opacity: .035; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* ─── Per-section solid tones ─────────────────────────────
+     Warm cream anchors the hero & contact; the body uses cool
+     stone-sage tones in alternation. The temperature shift
+     (warm → cool) reads as modern editorial rhythm without
+     darkening the page. */
+  .bg-cream { background-color: #F6F3EB; }   /* light warm — hero, contact */
+  .bg-stone { background-color: #ECEDE7; }   /* light cool sage — definitions, framing */
+  .bg-sand  { background-color: #E3E5DD; }   /* deeper cool sage — problem, examples, timeline */
+
+  /* ─── Typography ──────────────────────────────────────────── */
+  .display {
+    font-family: 'Fraunces', Georgia, serif;
+    font-variation-settings: "opsz" 144, "SOFT" 30;
+    letter-spacing: -0.02em;
+    line-height: 0.98;
+    font-weight: 380;
+  }
+  .display em {
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 80;
+    color: #2E4FA8;
+  }
+  .display-sm {
+    font-family: 'Fraunces', Georgia, serif;
+    font-variation-settings: "opsz" 72, "SOFT" 30;
+    letter-spacing: -0.015em;
+    line-height: 1.05;
+    font-weight: 400;
+  }
+
+  .mono-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .hairline   { border-color: #D8D3C4; }
+  .hairline-2 { border-color: #E8E3D3; }
+
+  /* ─── Card (kept the light-blue hover) ────────────────────── */
+  .civic-card {
+    background: #FBF9F2;
+    border: 1px solid #E8E3D3;
+    transition: border-color .25s ease, transform .25s ease, background .25s ease, box-shadow .25s ease;
+  }
+  .civic-card:hover {
+    border-color: #B8C4DD;
+    background: #F4F6FC;       /* light civic blue */
+    box-shadow: 0 6px 24px -16px rgba(46,79,168,0.25);
+  }
+
+  .idx {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: #6B7280;
+  }
+
+  .sec { padding-top: 96px; padding-bottom: 96px; }
+  @media (max-width: 768px) {
+    .sec { padding-top: 64px; padding-bottom: 64px; }
+  }
+
+  /* ─── Nav ─────────────────────────────────────────────────── */
+  .nav-blur {
+    backdrop-filter: saturate(140%) blur(10px);
+    background-color: rgba(246, 243, 235, 0.78);
+    border-bottom: 1px solid rgba(216, 211, 196, 0.5);
+  }
+  section[id] { scroll-margin-top: 80px; }
+
+  .link-quiet {
+    background-image: linear-gradient(to right, currentColor, currentColor);
+    background-size: 100% 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size .25s ease;
+  }
+  .link-quiet:hover { background-size: 0% 1px; }
+
+  /* ─── Buttons ─────────────────────────────────────────────── */
+  .btn {
+    display: inline-flex; align-items: center; gap: .6rem;
+    padding: 12px 20px;
+    font-size: 14px; font-weight: 500;
+    border-radius: 999px;
+    transition: all .2s ease;
+  }
+  .btn-primary { background: #0E1B2C; color: #F6F3EB; }
+  .btn-primary:hover { background: #2E4FA8; }
+  .btn-ghost { border: 1px solid #2A3A52; color: #0E1B2C; }
+  .btn-ghost:hover { background: #0E1B2C; color: #F6F3EB; }
+  .btn .arr { transition: transform .2s ease; }
+  .btn:hover .arr { transform: translateX(3px); }
+
+  /* ─── Reveal ──────────────────────────────────────────────── */
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .rise > * { animation: rise .8s cubic-bezier(.2,.7,.2,1) both; }
+  .rise > *:nth-child(1) { animation-delay: .05s; }
+  .rise > *:nth-child(2) { animation-delay: .15s; }
+  .rise > *:nth-child(3) { animation-delay: .25s; }
+  .rise > *:nth-child(4) { animation-delay: .35s; }
+  .rise > *:nth-child(5) { animation-delay: .45s; }
+  .rise > *:nth-child(6) { animation-delay: .55s; }
+
+  /* ─── Live status banner ─────────────────────────────────── */
+  .live-banner {
+    background: linear-gradient(180deg, #FFFFFF 0%, #FBF9F2 100%);
+    border: 1px solid #2A3A52;
+    border-radius: 14px;
+    box-shadow: 0 1px 0 #FFF inset, 0 10px 40px -22px rgba(14,27,44,0.35);
+    overflow: hidden;
+  }
+  .live-banner:hover { border-color: #2E4FA8; }
+  .live-dot {
+    width: 8px; height: 8px; border-radius: 999px; background: #C8442D;
+    box-shadow: 0 0 0 0 rgba(200,68,45,.55);
+    animation: pulseLive 1.8s infinite;
+  }
+  @keyframes pulseLive {
+    0%   { box-shadow: 0 0 0 0 rgba(200,68,45,.55); }
+    70%  { box-shadow: 0 0 0 10px rgba(200,68,45,0); }
+    100% { box-shadow: 0 0 0 0 rgba(200,68,45,0); }
+  }
+  /* Stack items in the same grid cell so the container auto-sizes
+     to the tallest item — no more overflow when text wraps. */
+  .ticker-stage { display: grid; min-width: 0; }
+  .ticker-item {
+    grid-column: 1; grid-row: 1;
+    opacity: 0; transform: translateY(6px);
+    transition: opacity .5s ease, transform .5s ease;
+    display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap;
+    pointer-events: none;
+  }
+  .ticker-item.is-active {
+    opacity: 1; transform: translateY(0);
+    pointer-events: auto;
+  }
+  .ticker-item .ticker-tag { flex-shrink: 0; align-self: flex-start; margin-top: 2px; }
+  .ticker-item .ticker-text { flex: 1 1 0; min-width: 0; }
+  .ticker-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 999px;
+    background: #EDE9DD; color: #2A3A52; border: 1px solid #D8D3C4;
+  }
+  .ticker-tag.event { background: #E8EEFB; color: #2E4FA8; border-color: #B8C4DD; }
+  .ticker-tag.update { background: #EEEAF5; color: #6E5C9C; border-color: #D6CFE5; }
+
+  /* ─── Protocol: circular SVG loop ────────────────────────── */
+  #protocol-circle .circle-step .dot,
+  #protocol-circle .circle-step .halo {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: fill .35s ease, stroke .35s ease,
+                transform .35s ease, fill-opacity .35s ease;
+  }
+  #protocol-circle .circle-step.is-active .dot {
+    fill: #2E4FA8;
+    stroke: #2E4FA8;
+    transform: scale(1.4);
+  }
+  #protocol-circle .circle-step.is-active .halo {
+    fill-opacity: 0.18;
+    transform: scale(1.05);
+  }
+
+  /* ─── Tags ───────────────────────────────────────────────── */
+  .tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 999px;
+    background: #EDE9DD; color: #2A3A52; border: 1px solid #D8D3C4;
+  }
+  .tag.now    { background: #E8EEFB; color: #2E4FA8; border-color: #B8C4DD; }
+  .tag.past   { background: #EDE9DD; color: #6B7280; border-color: #D8D3C4; }
+  .tag.future { background: #EEEAF5; color: #6E5C9C; border-color: #D6CFE5; }
+  .tag::before { content: ""; width: 5px; height: 5px; border-radius: 999px; background: currentColor; opacity:.9; }
+
+  /* Pilot / Use-case type tags */
+  .tag.pilot {
+    background: #2E4FA8; color: #F6F3EB; border-color: #2E4FA8;
+  }
+  .tag.pilot::before { background: #F6F3EB; opacity: 1; }
+  .tag.usecase {
+    background: transparent; color: #6E5C9C;
+    border: 1px dashed #6E5C9C;
+  }
+  .tag.usecase::before { background: #6E5C9C; opacity: 1; }
+
+  /* ─── Decorative bracket eyebrow ─────────────────────────── */
+  .eyebrow { display: inline-flex; align-items: center; gap: 10px; }
+  .eyebrow::before {
+    content: ""; display: inline-block;
+    width: 22px; height: 1px; background: #6B7280;
+  }
+
+  /* ─── Sponsor / partner placeholder tiles (footer) ───────── */
+  .logo-cell {
+    border: 1px dashed rgba(246,243,235,0.28);
+    border-radius: 6px;
+    height: 56px;
+    display: flex; align-items: center; justify-content: center;
+    color: rgba(246,243,235,0.55);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  }
+
+  /* ─── Mobile menu ─────────────────────────────────────────── */
+  .menu-open { display: block !important; }
+
+  /* ─── Reduced motion ─────────────────────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    .rise > * { animation: none; }
+    .step, .step .dot, .ticker-item, .live-dot { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+
+<body class="grain antialiased">
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header id="top" class="sticky top-0 z-50 nav-blur">
+  <div class="max-w-page mx-auto px-6 md:px-10 h-[68px] flex items-center justify-between">
+    <a href="#top" class="flex items-center gap-3">
+      <!-- TODO: replace with Civic Ledger logo mark -->
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="2" y="2" width="20" height="20" rx="3" stroke="#0E1B2C" stroke-width="1.4"/>
+        <path d="M6 9h12M6 13h8M6 17h10" stroke="#0E1B2C" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      <span class="display-sm text-[18px] tracking-tight text-ink">Civic Ledger</span>
+    </a>
+
+    <nav class="hidden md:flex items-center gap-8 text-[14px] text-ink-soft">
+      <a class="link-quiet hover:text-ink" href="#what-it-is">What it is</a>
+      <a class="link-quiet hover:text-ink" href="#how-it-works">How it works</a>
+      <a class="link-quiet hover:text-ink" href="#pilots-and-cases">Pilots &amp; cases</a>
+      <a class="link-quiet hover:text-ink" href="#writing">Writing</a>
+      <a class="link-quiet hover:text-ink" href="#updates">Updates</a>
+      <a class="link-quiet hover:text-ink" href="#contact">Contact</a>
+    </nav>
+
+    <button id="menuBtn" class="md:hidden p-2 -mr-2" aria-label="Open menu" aria-expanded="false">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M4 7h16M4 12h16M4 17h16" stroke="#0E1B2C" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <div id="mobileMenu" class="hidden md:hidden border-t hairline-2 bg-paper">
+    <nav class="px-6 py-4 flex flex-col gap-1 text-[15px]">
+      <a class="py-2 link-quiet" href="#what-it-is">What it is</a>
+      <a class="py-2 link-quiet" href="#how-it-works">How it works</a>
+      <a class="py-2 link-quiet" href="#pilots-and-cases">Pilots &amp; cases</a>
+      <a class="py-2 link-quiet" href="#writing">Writing</a>
+      <a class="py-2 link-quiet" href="#updates">Updates</a>
+      <a class="py-2 link-quiet" href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+
+<!-- ============================================================
+     HERO  (with embedded Live banner; flow chain removed)
+     ============================================================ -->
+<section id="hero" class="relative">
+  <div class="max-w-page mx-auto px-6 md:px-10 pt-16 md:pt-24 pb-20 md:pb-24 rise">
+
+    <div class="mono-label text-mute eyebrow">Civic decision infrastructure</div>
+
+    <h1 class="display text-[44px] sm:text-[64px] md:text-[88px] lg:text-[104px] mt-6 max-w-[18ch]">
+      From static permits to <em>conditional&nbsp;agreements</em>.
+    </h1>
+
+    <div class="mt-10 grid md:grid-cols-12 gap-8 md:gap-12 items-start">
+      <div class="md:col-span-7">
+        <p class="text-[17px] md:text-[19px] leading-[1.55] text-ink-soft max-w-[58ch]">
+          Civic Ledger is an AI supported permissioning system that helps cities
+          turn citizen intent into structured, negotiable and auditable agreements.
+        </p>
+        <p class="text-[17px] md:text-[19px] leading-[1.55] text-ink-soft max-w-[58ch] mt-5">
+          It supports public authorities, stewards and communities to assess
+          requests, define workable conditions and record each agreement as a
+          reusable precedent.
+        </p>
+
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href="#how-it-works" class="btn btn-primary">
+            Explore how it works <span class="arr">→</span>
+          </a>
+          <a href="#pilots-and-cases" class="btn btn-ghost">View pilots &amp; use cases</a>
+        </div>
+
+        <!-- ── LIVE / CURRENT STATUS BANNER ──────────────── -->
+        <a href="#updates" class="live-banner mt-10 flex flex-col md:flex-row md:items-center gap-4 md:gap-5 px-5 py-4 md:py-5 group">
+          <!-- left: live tag -->
+          <div class="flex items-center gap-3 shrink-0">
+            <span class="live-dot"></span>
+            <div>
+              <div class="mono-label text-live">Live</div>
+              <div class="text-[11px] text-ink-soft font-mono mt-0.5">Current status</div>
+            </div>
+          </div>
+
+          <!-- vertical divider (desktop only) -->
+          <div class="hidden md:block self-stretch w-px bg-rule shrink-0"></div>
+
+          <!-- middle: rotating news ticker -->
+          <div class="ticker-stage flex-1 min-w-0" aria-live="polite">
+
+            <!-- Item 1 -->
+            <div class="ticker-item is-active" data-i="0">
+              <span class="ticker-tag event">Event · 22 May</span>
+              <span class="ticker-text text-[14.5px] text-ink leading-snug">
+                Online demo launch — see the permissioning workflow in action.
+                <span class="text-accent underline underline-offset-4 decoration-accent/40 ml-1 whitespace-nowrap">Sign up →</span>
+              </span>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="ticker-item" data-i="1">
+              <span class="ticker-tag event">Forum · 12 Jun</span>
+              <span class="ticker-text text-[14.5px] text-ink leading-snug">
+                Global placemaking forum — conditional agreements in shared urban assets.
+                <span class="text-accent underline underline-offset-4 decoration-accent/40 ml-1 whitespace-nowrap">Sign up →</span>
+              </span>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="ticker-item" data-i="2">
+              <span class="ticker-tag update">Pilot · Daegu</span>
+              <span class="ticker-text text-[14.5px] text-ink leading-snug">
+                Moving from proof of concept to pilot ready deployment with Daegu Technopark.
+                <span class="text-accent underline underline-offset-4 decoration-accent/40 ml-1 whitespace-nowrap">Read →</span>
+              </span>
+            </div>
+
+            <!-- Item 4 -->
+            <div class="ticker-item" data-i="3">
+              <span class="ticker-tag">Note</span>
+              <span class="ticker-text text-[14.5px] text-ink leading-snug">
+                Civic Ledger supports human decision making. It does not automate final public decisions.
+              </span>
+            </div>
+          </div>
+
+          <!-- right: cta -->
+          <div class="shrink-0 md:text-right md:pl-2 md:border-l md:border-rule">
+            <span class="mono-label text-ink group-hover:text-accent transition-colors whitespace-nowrap md:pl-3">View timeline →</span>
+          </div>
+        </a>
+        <!-- TODO: replace ticker items + sign-up URLs with real event links -->
+      </div>
+
+      <!-- Reassurance aside -->
+      <aside class="md:col-span-5 md:pl-8 md:border-l hairline">
+        <div class="mono-label text-accent">A note on authority</div>
+        <p class="display-sm text-[20px] md:text-[22px] mt-3 text-ink leading-snug">
+          Civic Ledger supports human decision making.
+          It does <span class="italic" style="color:#2E4FA8">not</span> automate final public decisions.
+        </p>
+        <p class="mt-6 text-[14.5px] leading-relaxed text-ink-soft max-w-[36ch]">
+          Each step is designed to be visible, reviewable and accountable.
+          Public servants and stewards retain final authority over outputs.
+        </p>
+      </aside>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ============================================================
+     § 01  PROBLEM
+     ============================================================ -->
+<section id="problem" class="sec bg-sand border-t hairline-2">
+  <div class="max-w-page mx-auto px-6 md:px-10">
+
+    <div class="grid md:grid-cols-12 gap-10 md:gap-12">
+      <div class="md:col-span-5">
+        <div class="mono-label text-mute eyebrow">§ 01 · Problem</div>
+        <h2 class="display-sm text-[34px] md:text-[44px] mt-5 max-w-[16ch]">
+          Cities operate in real time. Permission systems often do not.
+        </h2>
+      </div>
+
+      <div class="md:col-span-7 md:pt-2">
+        <p class="text-[16px] md:text-[17px] leading-relaxed text-ink-soft max-w-[60ch]">
+          Current public permissioning systems are often too rigid, slow and
+          form based to support timely use of underused urban assets.
+        </p>
+        <p class="text-[16px] md:text-[17px] leading-relaxed text-ink-soft max-w-[60ch] mt-4">
+          Many low to medium risk civic uses, from community care to small
+          enterprise and temporary climate response, fall outside existing
+          permit categories. They face delay, rejection or inconsistent handling.
+        </p>
+        <p class="text-[16px] md:text-[17px] leading-relaxed text-ink-soft max-w-[60ch] mt-4">
+          The problem is not lack of demand. It is the lack of an operational
+          workflow to assess context, route requests and generate conditional
+          approvals.
+        </p>
+      </div>
+    </div>
+
+    <div class="mt-14 grid md:grid-cols-3 gap-5">
+      <article class="civic-card p-7">
+        <div class="idx">Problem · 01</div>
+        <h3 class="display-sm text-[22px] mt-4">Rigid categories</h3>
+        <p class="mt-3 text-[15px] leading-relaxed text-ink-soft">
+          Many civic uses do not fit standard permit types, so they are treated
+          as exceptions.
+        </p>
+      </article>
+      <article class="civic-card p-7">
+        <div class="idx">Problem · 02</div>
+        <h3 class="display-sm text-[22px] mt-4">Unequal access</h3>
+        <p class="mt-3 text-[15px] leading-relaxed text-ink-soft">
+          People with more administrative knowledge can navigate permission
+          systems more easily.
+        </p>
+      </article>
+      <article class="civic-card p-7">
+        <div class="idx">Problem · 03</div>
+        <h3 class="display-sm text-[22px] mt-4">Slow coordination</h3>
+        <p class="mt-3 text-[15px] leading-relaxed text-ink-soft">
+          Requests often move manually across fragmented departments, creating
+          delay and inconsistency.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     § 02  WHAT IS CIVIC LEDGER
+     ============================================================ -->
+<section id="what-it-is" class="sec bg-stone">
+  <div class="max-w-page mx-auto px-6 md:px-10">
+
+    <div class="grid md:grid-cols-12 gap-10 md:gap-12">
+      <div class="md:col-span-5">
+        <div class="mono-label text-mute eyebrow">§ 02 · Definition</div>
+        <h2 class="display-sm text-[34px] md:text-[44px] mt-5 max-w-[14ch]">
+          What is Civic Ledger?
+        </h2>
+      </div>
+
+      <div class="md:col-span-7">
+        <p class="text-[17px] md:text-[18px] leading-relaxed text-ink max-w-[60ch]">
+          Civic Ledger is a civic decision infrastructure for managing requests
+          to use shared and underused urban assets.
+        </p>
+        <p class="text-[16px] md:text-[17px] leading-relaxed text-ink-soft max-w-[60ch] mt-4">
+          It translates natural language requests into structured proposals,
+          checks them against rules and local context, and routes them through
+          the right decision pathway: direct approval, conditional negotiation
+          or human review.
+        </p>
+        <p class="text-[16px] md:text-[17px] leading-relaxed text-ink-soft max-w-[60ch] mt-4">
+          Rather than asking only whether a request should be approved or denied,
+          Civic Ledger asks: <em class="italic text-ink">under what conditions could this use become possible, safe and accountable?</em>
+        </p>
+
+        <figure class="mt-9 border-l-2 border-accent pl-6 max-w-[58ch]">
+          <div class="mono-label text-accent mb-2">On the word "ledger"</div>
+          <blockquote class="display-sm text-[20px] md:text-[22px] leading-snug text-ink">
+            The ledger is not only a technical record. It is a civic memory of
+            what was requested, what was agreed, under which conditions, and
+            what was learned.
+          </blockquote>
+        </figure>
+      </div>
+    </div>
+
+    <div class="mt-14 grid md:grid-cols-3 gap-5">
+      <article class="civic-card p-7">
+        <div class="idx">Function · 01</div>
+        <h3 class="display-sm text-[22px] mt-4">Make requests <em class="italic" style="color:#2E4FA8">legible</em></h3>
+        <p class="mt-3 text-[15px] leading-relaxed text-ink-soft">
+          Translate everyday language into structured cases.
+        </p>
+      </article>
+      <article class="civic-card p-7">
+        <div class="idx">Function · 02</div>
+        <h3 class="display-sm text-[22px] mt-4">Move from yes or no to <em class="italic" style="color:#2E4FA8">yes, if</em></h3>
+        <p class="mt-3 text-[15px] leading-relaxed text-ink-soft">
+          Generate conditional agreements that balance rules, context and
+          trade offs.
+        </p>
+      </article>
+      <article class="civic-card p-7">
+        <div class="idx">Function · 03</div>
+        <h3 class="display-sm text-[22px] mt-4">Build a <em class="italic" style="color:#2E4FA8">learning record</em></h3>
+        <p class="mt-3 text-[15px] leading-relaxed text-ink-soft">
+          Record each case as a precedent for future decisions and workflow
+          updates.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     § 03  WHO IT HELPS
+     ============================================================ -->
+<section id="who-it-helps" class="sec bg-sand">
+  <div class="max-w-page mx-auto px-6 md:px-10">
+
+    <div class="grid md:grid-cols-12 gap-10 md:gap-12 items-end">
+      <div class="md:col-span-7">
+        <div class="mono-label text-mute eyebrow">§ 03 · Audience</div>
+        <h2 class="display-sm text-[34px] md:text-[44px] mt-5 max-w-[18ch]">
+          Who Civic Ledger helps
+        </h2>
+      </div>
+      <p class="md:col-span-5 text-[16px] md:text-[17px] leading-relaxed text-ink-soft max-w-[55ch]">
+        Civic Ledger supports the people who request, manage and decide how
+        shared urban assets can be used.
+      </p>
+    </div>
+
+    <div class="mt-12 grid md:grid-cols-3 gap-5">
+      <article class="civic-card p-8">
+        <div class="mono-label text-accent">For</div>
+        <h3 class="display-sm text-[24px] mt-3">Residents &amp; community groups</h3>
+        <p class="mt-4 text-[15px] leading-relaxed text-ink-soft">
+          A clearer route to request and use shared space, especially when
+          existing forms or categories do not fit the activity.
+        </p>
+      </article>
+      <article class="civic-card p-8">
+        <div class="mono-label text-accent">For</div>
+        <h3 class="display-sm text-[24px] mt-3">Stewards &amp; place operators</h3>
+        <p class="mt-4 text-[15px] leading-relaxed text-ink-soft">
+          A structured way to manage requests, define conditions, share
+          responsibilities and record what happens.
+        </p>
+      </article>
+      <article class="civic-card p-8">
+        <div class="mono-label text-accent">For</div>
+        <h3 class="display-sm text-[24px] mt-3">Public servants</h3>
+        <p class="mt-4 text-[15px] leading-relaxed text-ink-soft">
+          A consistent workflow for routing, reviewing and learning from
+          non standard cases, while keeping decision authority with human actors.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     § 04  HOW IT WORKS   (Protocol + Pathways + Authority merged)
+     ============================================================ -->
+<section id="how-it-works" class="sec bg-stone">
+  <div class="max-w-page mx-auto px-6 md:px-10">
+
+    <div class="grid md:grid-cols-12 gap-10 md:gap-12 items-end">
+      <div class="md:col-span-7">
+        <div class="mono-label text-mute eyebrow">§ 04 · How it works</div>
+        <h2 class="display-sm text-[34px] md:text-[44px] mt-5 max-w-[18ch]">
+          From request to reusable precedent
+        </h2>
+      </div>
+      <p class="md:col-span-5 text-[16px] md:text-[17px] leading-relaxed text-ink-soft max-w-[55ch]">
+        Civic Ledger processes each request through a six step protocol, routes
+        it through a proportional pathway, and keeps final authority with human
+        actors.
+      </p>
+    </div>
+
+    <!-- ─── (1) Protocol: 6 steps, animated active dot ──────── -->
+    <div class="mt-14">
+      <div class="mono-label text-mute mb-6">Six steps</div>
+
+      <!-- Desktop: circular loop -->
+      <div class="hidden md:block">
+        <div class="relative mx-auto" style="max-width: 540px;">
+          <svg viewBox="0 0 600 500" class="w-full h-auto" id="protocol-circle"
+               aria-label="Six-step protocol arranged as a continuous loop">
+
+            <!-- Outer guide ring -->
+            <circle cx="300" cy="250" r="180" fill="none"
+                    stroke="#0E1B2C" stroke-opacity="0.28"
+                    stroke-dasharray="3 7" stroke-width="1.2"/>
+
+            <!-- Subtle clockwise direction marker (top) -->
+            <g transform="translate(345, 73)" opacity="0.4">
+              <path d="M 0 0 L 9 4 L 0 9" fill="none"
+                    stroke="#0E1B2C" stroke-width="1.2"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+
+            <!-- Center: active-step readout (updated by JS) -->
+            <g id="protocol-center" style="transition: opacity .25s ease;">
+              <text x="300" y="232" text-anchor="middle"
+                    font-family="IBM Plex Mono" font-size="11"
+                    letter-spacing="2.4" font-weight="500"
+                    fill="#2E4FA8" id="active-step-num">STEP 01</text>
+              <text x="300" y="285" text-anchor="middle"
+                    font-family="Fraunces" font-size="44" font-weight="380"
+                    letter-spacing="-0.01em"
+                    fill="#0E1B2C" id="active-step-name">Intent</text>
+            </g>
+            <text x="300" y="316" text-anchor="middle"
+                  font-family="IBM Plex Mono" font-size="9.5"
+                  letter-spacing="2.5" fill="#6B7280">CONTINUOUS LOOP</text>
+
+            <!-- Node 01 · top -->
+            <g class="circle-step is-active" data-step="0" data-num="01" data-name="Intent">
+              <circle class="halo" cx="300" cy="70" r="22" fill="#2E4FA8" fill-opacity="0"/>
+              <circle class="dot"  cx="300" cy="70" r="9"
+                      fill="#F6F3EB" stroke="#2A3A52" stroke-width="1.5"/>
+              <text x="300" y="36" text-anchor="middle"
+                    font-family="IBM Plex Mono" font-size="11"
+                    letter-spacing="2" font-weight="500" fill="#2E4FA8">01</text>
+            </g>
+
+            <!-- Node 02 · upper right -->
+            <g class="circle-step" data-step="1" data-num="02" data-name="Proposal">
+              <circle class="halo" cx="456" cy="160" r="22" fill="#2E4FA8" fill-opacity="0"/>
+              <circle class="dot"  cx="456" cy="160" r="9"
+                      fill="#F6F3EB" stroke="#2A3A52" stroke-width="1.5"/>
+              <text x="492" y="155" text-anchor="start"
+                    font-family="IBM Plex Mono" font-size="11"
+                    letter-spacing="2" font-weight="500" fill="#2E4FA8">02</text>
+            </g>
+
+            <!-- Node 03 · lower right -->
+            <g class="circle-step" data-step="2" data-num="03" data-name="Conditions">
+              <circle class="halo" cx="456" cy="340" r="22" fill="#2E4FA8" fill-opacity="0"/>
+              <circle class="dot"  cx="456" cy="340" r="9"
+                      fill="#F6F3EB" stroke="#2A3A52" stroke-width="1.5"/>
+              <text x="492" y="349" text-anchor="start"
+                    font-family="IBM Plex Mono" font-size="11"
+                    letter-spacing="2" font-weight="500" fill="#2E4FA8">03</text>
+            </g>
+
+            <!-- Node 04 · bottom -->
+            <g class="circle-step" data-step="3" data-num="04" data-name="Agreement">
+              <circle class="halo" cx="300" cy="430" r="22" fill="#2E4FA8" fill-opacity="0"/>
+              <circle class="dot"  cx="300" cy="430" r="9"
+                      fill="#F6F3EB" stroke="#2A3A52" stroke-width="1.5"/>
+              <text x="300" y="472" text-anchor="middle"
+                    font-family="IBM Plex Mono" font-size="11"
+                    letter-spacing="2" font-weight="500" fill="#2E4FA8">04</text>
+            </g>
+
+            <!-- Node 05 · lower left -->
+            <g class="circle-step" data-step="4" data-num="05" data-name="Proof">
+              <circle class="halo" cx="144" cy="340" r="22" fill="#2E4FA8" fill-opacity="0"/>
+              <circle class="dot"  cx="144" cy="340" r="9"
+                      fill="#F6F3EB" stroke="#2A3A52" stroke-width="1.5"/>
+              <text x="108" y="349" text-anchor="end"
+                    font-family="IBM Plex Mono" font-size="11"
+                    letter-spacing="2" font-weight="500" fill="#2E4FA8">05</text>
+            </g>
+
+            <!-- Node 06 · upper left -->
+            <g class="circle-step" data-step="5" data-num="06" data-name="Learning">
+              <circle class="halo" cx="144" cy="160" r="22" fill="#2E4FA8" fill-opacity="0"/>
+              <circle class="dot"  cx="144" cy="160" r="9"
+                      fill="#F6F3EB" stroke="#2A3A52" stroke-width="1.5"/>
+              <text x="108" y="155" text-anchor="end"
+                    font-family="IBM Plex Mono" font-size="11"
+                    letter-spacing="2" font-weight="500" fill="#2E4FA8">06</text>
+            </g>
+          </svg>
+        </div>
+
+        <!-- Step descriptions: 3-col grid below the circle -->
+        <div class="mt-10 grid grid-cols-3 gap-x-8 gap-y-9 max-w-[880px] mx-auto">
+          <div>
+            <div class="mono-label text-accent">Step 01</div>
+            <h4 class="display-sm text-[20px] mt-2">Intent</h4>
+            <p class="mt-2 text-[14px] leading-relaxed text-ink-soft">
+              A citizen, steward or organisation signals what they want to do and why.
+            </p>
+          </div>
+          <div>
+            <div class="mono-label text-accent">Step 02</div>
+            <h4 class="display-sm text-[20px] mt-2">Proposal</h4>
+            <p class="mt-2 text-[14px] leading-relaxed text-ink-soft">
+              The request, written in everyday language, becomes a structured case.
+            </p>
+          </div>
+          <div>
+            <div class="mono-label text-accent">Step 03</div>
+            <h4 class="display-sm text-[20px] mt-2">Conditions</h4>
+            <p class="mt-2 text-[14px] leading-relaxed text-ink-soft">
+              Rules, location, timing and local context are used to assess risk and route the case.
+            </p>
+          </div>
+          <div>
+            <div class="mono-label text-accent">Step 04</div>
+            <h4 class="display-sm text-[20px] mt-2">Agreement</h4>
+            <p class="mt-2 text-[14px] leading-relaxed text-ink-soft">
+              Conditions for use are shaped through structured negotiation where needed.
+            </p>
+          </div>
+          <div>
+            <div class="mono-label text-accent">Step 05</div>
+            <h4 class="display-sm text-[20px] mt-2">Proof</h4>
+            <p class="mt-2 text-[14px] leading-relaxed text-ink-soft">
+              The agreement is recorded as a verifiable and auditable commitment.
+            </p>
+          </div>
+          <div>
+            <div class="mono-label text-accent">Step 06</div>
+            <h4 class="display-sm text-[20px] mt-2">Learning</h4>
+            <p class="mt-2 text-[14px] leading-relaxed text-ink-soft">
+              Outcomes from real use inform future rules and workflows — feeding the next request.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile: vertical timeline -->
+      <ol class="md:hidden flex flex-col gap-7 border-l hairline pl-6 mt-2">
+        <li class="relative"><span class="absolute -left-[31px] top-1.5 w-3 h-3 rounded-full bg-accent"></span>
+          <div class="mono-label text-accent">Step 01 · Intent</div>
+          <p class="mt-2 text-[15px] leading-relaxed text-ink-soft">A citizen, steward or organisation signals what they want to do and why.</p></li>
+        <li class="relative"><span class="absolute -left-[31px] top-1.5 w-3 h-3 rounded-full bg-ink"></span>
+          <div class="mono-label text-accent">Step 02 · Proposal</div>
+          <p class="mt-2 text-[15px] leading-relaxed text-ink-soft">The request, written in everyday language, becomes a structured case.</p></li>
+        <li class="relative"><span class="absolute -left-[31px] top-1.5 w-3 h-3 rounded-full bg-ink"></span>
+          <div class="mono-label text-accent">Step 03 · Conditions</div>
+          <p class="mt-2 text-[15px] leading-relaxed text-ink-soft">Rules, location, timing and local context assess risk and route the case.</p></li>
+        <li class="relative"><span class="absolute -left-[31px] top-1.5 w-3 h-3 rounded-full bg-ink"></span>
+          <div class="mono-label text-accent">Step 04 · Agreement</div>
+          <p class="mt-2 text-[15px] leading-relaxed text-ink-soft">Conditions for use are shaped through structured negotiation where needed.</p></li>
+        <li class="relative"><span class="absolute -left-[31px] top-1.5 w-3 h-3 rounded-full bg-ink"></span>
+          <div class="mono-label text-accent">Step 05 · Proof</div>
+          <p class="mt-2 text-[15px] leading-relaxed text-ink-soft">The agreement is recorded as a verifiable and auditable commitment.</p></li>
+        <li class="relative"><span class="absolute -left-[31px] top-1.5 w-3 h-3 rounded-full bg-ink"></span>
+          <div class="mono-label text-accent">Step 06 · Learning</div>
+          <p class="mt-2 text-[15px] leading-relaxed text-ink-soft">Outcomes from real use inform future rules, templates and workflows.</p></li>
+      </ol>
+    </div>
+
+    <!-- ─── (2) Three pathways with risk/speed sub-labels ──── -->
+    <div class="mt-20 pt-12 border-t hairline-2">
+      <div class="mono-label text-mute mb-3">Proportional routing</div>
+      <p class="text-[15px] md:text-[16px] leading-relaxed text-ink-soft max-w-[68ch]">
+        Not every request needs the same level of review. Civic Ledger routes
+        cases through proportional pathways depending on risk, complexity and
+        local context.
+      </p>
+
+      <div class="mt-8 grid md:grid-cols-3 gap-5">
+        <article class="civic-card p-8 relative overflow-hidden">
+          <div class="absolute top-0 left-0 right-0 h-[3px] bg-accent/70"></div>
+          <div class="mono-label text-accent">Pathway · 01</div>
+          <h3 class="display-sm text-[24px] mt-3">Direct approval</h3>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-soft">
+            For low risk uses that meet existing rules and conditions.
+          </p>
+          <div class="mt-5 pt-4 border-t hairline-2 mono-label text-accent">
+            Risk: Low · Speed: Immediate
+          </div>
+        </article>
+
+        <article class="civic-card p-8 relative overflow-hidden">
+          <div class="absolute top-0 left-0 right-0 h-[3px] bg-lav/70"></div>
+          <div class="mono-label" style="color:#6E5C9C">Pathway · 02</div>
+          <h3 class="display-sm text-[24px] mt-3">Conditional negotiation</h3>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-soft">
+            For non standard or medium risk uses where a workable agreement may
+            be possible.
+          </p>
+          <div class="mt-5 pt-4 border-t hairline-2 mono-label" style="color:#6E5C9C">
+            Risk: Medium · Speed: Iterative
+          </div>
+        </article>
+
+        <article class="civic-card p-8 relative overflow-hidden">
+          <div class="absolute top-0 left-0 right-0 h-[3px] bg-ink/70"></div>
+          <div class="mono-label text-ink">Pathway · 03</div>
+          <h3 class="display-sm text-[24px] mt-3">Human review</h3>
+          <p class="mt-4 text-[15px] leading-relaxed text-ink-soft">
+            For higher risk cases that need public officials or relevant
+            authorities to assess the request.
+          </p>
+          <div class="mt-5 pt-4 border-t hairline-2 mono-label text-ink">
+            Risk: High · Speed: Considered
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <!-- ─── (3) Authority statement (mini, merged) ──────────── -->
+    <div class="mt-20 pt-12 border-t hairline-2 grid md:grid-cols-12 gap-10 md:gap-12">
+      <div class="md:col-span-5">
+        <div class="mono-label text-mute">Authority</div>
+        <h3 class="display-sm text-[26px] md:text-[30px] mt-3 max-w-[18ch]">
+          Decisions remain with people.
+        </h3>
+      </div>
+      <div class="md:col-span-7">
+        <p class="text-[16px] md:text-[17px] leading-relaxed text-ink-soft max-w-[60ch]">
+          Civic Ledger structures decision making. It interprets requests,
+          checks rules and context, suggests pathways and drafts conditions.
+        </p>
+        <p class="text-[16px] md:text-[17px] leading-relaxed text-ink-soft max-w-[60ch] mt-4">
+          Final authority remains with the relevant human actors and
+          institutions. Public servants, stewards and authorised reviewers can
+          review, adjust or override outputs at key decision points.
+        </p>
+
+        <div class="mt-7">
+          <div class="mono-label text-mute mb-3">Decision sequence</div>
+          <div class="flex flex-wrap items-center gap-x-3 gap-y-3">
+            <span class="font-mono text-[13px] text-ink">Interpret</span>
+            <span class="text-mute">→</span>
+            <span class="font-mono text-[13px] text-ink">Check</span>
+            <span class="text-mute">→</span>
+            <span class="font-mono text-[13px] text-ink">Route</span>
+            <span class="text-mute">→</span>
+            <span class="font-mono text-[13px] text-ink">Negotiate</span>
+            <span class="text-mute">→</span>
+            <span class="font-mono text-[13px] text-ink">Review</span>
+            <span class="text-mute">→</span>
+            <span class="font-mono text-[13px]" style="color:#2E4FA8">Record</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     § 05  PILOTS  +  USE CASES  (single flat grid, type-tagged)
+     ============================================================ -->
+<section id="pilots-and-cases" class="sec bg-sand">
+  <div class="max-w-page mx-auto px-6 md:px-10">
+
+    <div class="grid md:grid-cols-12 gap-10 md:gap-12 items-end">
+      <div class="md:col-span-7">
+        <div class="mono-label text-mute eyebrow">§ 05 · Pilots &amp; use cases</div>
+        <h2 class="display-sm text-[34px] md:text-[44px] mt-5 max-w-[18ch]">
+          Where Civic Ledger is being tested and imagined
+        </h2>
+      </div>
+      <p class="md:col-span-5 text-[16px] md:text-[17px] leading-relaxed text-ink-soft max-w-[55ch]">
+        Pilots ground the system in real cities. Use cases are speculative
+        scenarios — sketches of where conditional permissioning could go next.
+      </p>
+    </div>
+
+    <!-- Unified 4-card grid -->
+    <div class="mt-6 grid md:grid-cols-2 gap-5">
+
+      <!-- Incheon · Pilot · Now -->
+      <!-- TODO: link to Incheon pilot detail -->
+      <a href="#" class="civic-card p-8 flex flex-col group">
+        <div class="flex items-center flex-wrap gap-2 justify-between">
+          <span class="tag pilot">Pilot</span>
+          <span class="tag now">Now</span>
+        </div>
+        <h3 class="display-sm text-[24px] mt-5 group-hover:text-accent transition-colors">
+          Underutilised spaces with Incheon City
+        </h3>
+        <p class="mt-4 text-[15px] leading-relaxed text-ink-soft flex-1">
+          A six-month proof of concept currently testing the system&rsquo;s
+          core mechanism through a conversational interface integrating space
+          registry functions and chat-based workflows. Live cases include the
+          temporary activation of parking spaces and community hubs, exploring
+          how natural language requests can be translated into structured
+          proposals and routed through automatic permission, conditional
+          approval and deliberative processes.
+        </p>
+        <span class="mt-6 mono-label text-accent">Read more &rarr;</span>
+      </a>
+
+      <!-- Daegu · Pilot · Future -->
+      <!-- TODO: link to Daegu pilot detail page -->
+      <a href="#" class="civic-card p-8 flex flex-col group">
+        <div class="flex items-center flex-wrap gap-2 justify-between">
+          <span class="tag pilot">Pilot</span>
+          <span class="tag future">Future</span>
+        </div>
+        <h3 class="display-sm text-[24px] mt-5 group-hover:text-accent transition-colors">
+          Underutilised spaces with Daegu Metropolitan City
+        </h3>
+        <p class="mt-4 text-[15px] leading-relaxed text-ink-soft flex-1">
+          A planned 36-month engagement with Daegu&rsquo;s Urban Regeneration
+          Bureau and the Suseong Smart City Division, coordinated through
+          Daegu Technopark. Two pilot sites will process real permissioning
+          cases involving 5&ndash;10 steward organisations and 50&ndash;100
+          active users, routing requests through direct approval, conditional
+          negotiation and human review pathways.
+        </p>
+        <span class="mt-6 mono-label text-accent">Read more &rarr;</span>
+      </a>
+
+      <!-- Migrant commons · Use case · Future -->
+      <!-- TODO: link to scenario long-read -->
+      <a href="#" class="civic-card p-8 flex flex-col group">
+        <div class="flex items-center flex-wrap gap-2 justify-between">
+          <span class="tag usecase">Use case</span>
+          <span class="tag future">Future</span>
+        </div>
+        <h3 class="display-sm text-[24px] mt-5 group-hover:text-accent transition-colors">
+          Migrant-led commons of care
+        </h3>
+        <p class="mt-3 text-[13.5px] italic text-mute leading-relaxed">
+          Speculative scenario &mdash; not an active pilot.
+        </p>
+        <p class="mt-3 text-[15px] leading-relaxed text-ink-soft flex-1">
+          In a near-future city, a migrant-led collective wants a stable place
+          for language exchange, shared meals and mutual support &mdash; not
+          a one-off booking but an ongoing care circle. Civic Ledger helps
+          them describe the request in their own terms, identify suitable
+          spaces across municipal and civic registries, surface the conditions
+          they would need to meet, and form a shared responsibility circle
+          with co-signers. The agreement evolves as the group does.
+        </p>
+        <span class="mt-6 mono-label" style="color:#6E5C9C">Read more &rarr;</span>
+      </a>
+
+      <!-- More-than-human permissioning · Use case · Future -->
+      <!-- TODO: link to scenario long-read -->
+      <a href="#" class="civic-card p-8 flex flex-col group">
+        <div class="flex items-center flex-wrap gap-2 justify-between">
+          <span class="tag usecase">Use case</span>
+          <span class="tag future">Future</span>
+        </div>
+        <h3 class="display-sm text-[24px] mt-5 group-hover:text-accent transition-colors">
+          More-than-human permissioning
+          <span class="block mt-1 text-[14px] font-mono uppercase tracking-wider text-mute">DIY-cities &middot; Melbourne</span>
+        </h3>
+        <p class="mt-3 text-[13.5px] italic text-mute leading-relaxed">
+          Speculative scenario &mdash; not an active pilot.
+        </p>
+        <p class="mt-3 text-[15px] leading-relaxed text-ink-soft flex-1">
+          In a near-future Melbourne, micro-architecture objects &mdash;
+          street furniture, indoor pieces, modular seating &mdash; themselves
+          carry permits. Requests can be initiated by people, by stewards, or
+          by sensors. A park&rsquo;s trees, fitted with IoT and weather data,
+          send out invitations:
+          <em class="italic text-ink">&ldquo;rainbow likely in five hours.&rdquo;</em>
+        </p>
+        <p class="mt-3 text-[15px] leading-relaxed text-ink-soft">
+          A resident requests permission to deploy folding chairs and a
+          picnic threshold to receive it. Civic Ledger negotiates between
+          the resident, the steward of the chairs, the park&rsquo;s
+          stewardship circle and the weather event itself, drafting a
+          temporary agreement that lapses when the rainbow fades. The
+          objects become touchpoints for collective imagination of how
+          cities might soften through small interventions.
+        </p>
+        <span class="mt-6 mono-label" style="color:#6E5C9C">Read more &rarr;</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+
+
+
+<!-- ============================================================
+     § 06  WRITING & RESEARCH  (4 typed variations)
+     ============================================================ -->
+<section id="writing" class="sec bg-stone">
+  <div class="max-w-page mx-auto px-6 md:px-10">
+
+    <div class="grid md:grid-cols-12 gap-10 md:gap-12">
+      <div class="md:col-span-5">
+        <div class="mono-label text-mute eyebrow">§ 06 · Writing</div>
+        <h2 class="display-sm text-[34px] md:text-[44px] mt-5 max-w-[14ch]">
+          Writing &amp; research
+        </h2>
+      </div>
+      <p class="md:col-span-7 md:pt-2 text-[16px] md:text-[17px] leading-relaxed text-ink-soft max-w-[60ch]">
+        Civic Ledger builds on a wider body of work on civic permissioning,
+        shared assets, adaptive governance and public space. These writings
+        provide the deeper background behind the project.
+      </p>
+    </div>
+
+    <div class="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <!-- TODO: replace href="#" with real article URLs -->
+      <a href="#" class="civic-card p-6 group flex flex-col">
+        <div class="flex items-center justify-between">
+          <span class="tag" style="background:#E8EEFB;color:#2E4FA8;border-color:#B8C4DD;">Essay</span>
+          <span class="idx">W · 01</span>
+        </div>
+        <h3 class="display-sm text-[20px] mt-5 group-hover:text-accent transition-colors">
+          Re-permissioning the city
+        </h3>
+        <p class="mt-3 text-[14px] leading-relaxed text-ink-soft flex-1">
+          Unlocking underused spatial assets for an emergent civic economy.
+        </p>
+        <span class="mt-5 mono-label text-accent">Read more →</span>
+      </a>
+
+      <a href="#" class="civic-card p-6 group flex flex-col">
+        <div class="flex items-center justify-between">
+          <span class="tag" style="background:#EDE9DD;color:#2A3A52;border-color:#D8D3C4;">Update</span>
+          <span class="idx">W · 02</span>
+        </div>
+        <h3 class="display-sm text-[20px] mt-5 group-hover:text-accent transition-colors">
+          Permissioning the City — 2025 update
+        </h3>
+        <p class="mt-3 text-[14px] leading-relaxed text-ink-soft flex-1">
+          A project update on the journey from early concept to product
+          development.
+        </p>
+        <span class="mt-5 mono-label text-accent">Read more →</span>
+      </a>
+
+      <a href="#" class="civic-card p-6 group flex flex-col">
+        <div class="flex items-center justify-between">
+          <span class="tag" style="background:#EEEAF5;color:#6E5C9C;border-color:#D6CFE5;">Reflection</span>
+          <span class="idx">W · 03</span>
+        </div>
+        <h3 class="display-sm text-[20px] mt-5 group-hover:text-accent transition-colors">
+          Development journey
+        </h3>
+        <p class="mt-3 text-[14px] leading-relaxed text-ink-soft flex-1">
+          Reflections on user journeys, scenario building and the transition
+          from project to product.
+        </p>
+        <span class="mt-5 mono-label text-accent">Read more →</span>
+      </a>
+
+      <a href="#" class="civic-card p-6 group flex flex-col">
+        <div class="flex items-center justify-between">
+          <span class="tag" style="background:#F7E8E4;color:#C8442D;border-color:#E8C7BE;">Provocation</span>
+          <span class="idx">W · 04</span>
+        </div>
+        <h3 class="display-sm text-[20px] mt-5 group-hover:text-accent transition-colors">
+          Peer-to-peer permissioning
+        </h3>
+        <p class="mt-3 text-[14px] leading-relaxed text-ink-soft flex-1">
+          Three pathways towards decentralised civics.
+        </p>
+        <span class="mt-5 mono-label text-accent">Read more →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     § 07  UPDATES & MATERIALS  (v1 list rhythm, newest first)
+     ============================================================ -->
+<section id="updates" class="sec bg-sand">
+  <div class="max-w-page mx-auto px-6 md:px-10">
+
+    <div class="grid md:grid-cols-12 gap-10 md:gap-12 items-end">
+      <div class="md:col-span-7">
+        <div class="mono-label text-mute eyebrow">§ 07 · Updates &amp; materials</div>
+        <h2 class="display-sm text-[34px] md:text-[44px] mt-5 max-w-[18ch]">
+          Updates &amp; materials
+        </h2>
+      </div>
+      <p class="md:col-span-5 text-[16px] md:text-[17px] leading-relaxed text-ink-soft max-w-[55ch]">
+        Recognition, articles, tool demos and pilot updates &mdash; ordered
+        with the most recent at the top. External links open in a new window.
+      </p>
+    </div>
+
+    <!-- Legend -->
+    <div class="mt-10 flex flex-wrap items-center gap-x-5 gap-y-2 text-[12px]">
+      <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-accent"></span><span class="mono-label text-mute">Material</span></span>
+      <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full" style="background:#6E5C9C;"></span><span class="mono-label text-mute">Demo</span></span>
+      <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full" style="background:#C8442D;"></span><span class="mono-label text-mute">Update</span></span>
+      <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full border border-mute"></span><span class="mono-label text-mute">Coming soon</span></span>
+    </div>
+
+    <ul class="mt-6 divide-y hairline border-y hairline">
+
+      <!-- M·01 — 2026 Edge 50 (apolitical) -->
+      <li><a href="https://apolitical.co/list/en/edge-50-2026"
+             target="_blank" rel="noopener noreferrer"
+             class="grid grid-cols-12 items-center gap-4 py-5 group">
+        <span class="col-span-2 md:col-span-1 idx text-accent">M&middot;01</span>
+        <span class="col-span-7 md:col-span-5 display-sm text-[18px] group-hover:text-accent transition-colors">Selected for the 2026 Edge 50</span>
+        <span class="hidden md:block md:col-span-5 text-[14px] text-ink-soft">Apolitical &middot; recognition among 50 leading civic innovations of 2026.</span>
+        <span class="col-span-3 md:col-span-1 text-right mono-label text-accent">Read &nearr;</span>
+      </a></li>
+
+      <!-- M·02 — Permissioning the City 2025 update (Medium) -->
+      <li><a href="https://medium.com/permissioning-the-city-product-journey/permissioning-the-city-2025-update-a9656316edb2"
+             target="_blank" rel="noopener noreferrer"
+             class="grid grid-cols-12 items-center gap-4 py-5 group">
+        <span class="col-span-2 md:col-span-1 idx text-accent">M&middot;02</span>
+        <span class="col-span-7 md:col-span-5 display-sm text-[18px] group-hover:text-accent transition-colors">Permissioning the City &mdash; 2025 update</span>
+        <span class="hidden md:block md:col-span-5 text-[14px] text-ink-soft">A project update on the journey from early concept to product development.</span>
+        <span class="col-span-3 md:col-span-1 text-right mono-label text-accent">Read &nearr;</span>
+      </a></li>
+
+      <!-- M·03 — Project deck -->
+      <li><a href="https://drive.google.com/file/d/1XOTZE35rXsltl5cWdgcHT9Jr3abeoYTf/view"
+             target="_blank" rel="noopener noreferrer"
+             class="grid grid-cols-12 items-center gap-4 py-5 group">
+        <span class="col-span-2 md:col-span-1 idx text-accent">M&middot;03</span>
+        <span class="col-span-7 md:col-span-5 display-sm text-[18px] group-hover:text-accent transition-colors">Project deck</span>
+        <span class="hidden md:block md:col-span-5 text-[14px] text-ink-soft">The latest Civic Ledger overview &mdash; purpose, protocol, pilots and roadmap.</span>
+        <span class="col-span-3 md:col-span-1 text-right mono-label text-accent">Open &nearr;</span>
+      </a></li>
+
+      <!-- M·04 — MVP demo video -->
+      <!-- TODO: link to MVP demo video -->
+      <li><a href="#" class="grid grid-cols-12 items-center gap-4 py-5 group">
+        <span class="col-span-2 md:col-span-1 idx text-accent">M&middot;04</span>
+        <span class="col-span-7 md:col-span-5 display-sm text-[18px] group-hover:text-accent transition-colors">MVP demo video</span>
+        <span class="hidden md:block md:col-span-5 text-[14px] text-ink-soft">A walk-through of the current permissioning workflow &mdash; from intent to recorded agreement.</span>
+        <span class="col-span-3 md:col-span-1 text-right mono-label text-accent">Watch &rarr;</span>
+      </a></li>
+
+      <!-- DEMO·01 — Auto approval demo -->
+      <!-- TODO: link to auto-approval demo -->
+      <li><a href="#" class="grid grid-cols-12 items-center gap-4 py-5 group">
+        <span class="col-span-2 md:col-span-1 idx" style="color:#6E5C9C;">DEMO&middot;01</span>
+        <span class="col-span-7 md:col-span-5 display-sm text-[18px] group-hover:text-accent transition-colors">Auto approval demo</span>
+        <span class="hidden md:block md:col-span-5 text-[14px] text-ink-soft">A low risk use is interpreted, assessed and routed through direct approval.</span>
+        <span class="col-span-3 md:col-span-1 text-right mono-label text-accent">Open &rarr;</span>
+      </a></li>
+
+      <!-- DEMO·02 — Conditional negotiation demo -->
+      <!-- TODO: link to conditional negotiation demo -->
+      <li><a href="#" class="grid grid-cols-12 items-center gap-4 py-5 group">
+        <span class="col-span-2 md:col-span-1 idx" style="color:#6E5C9C;">DEMO&middot;02</span>
+        <span class="col-span-7 md:col-span-5 display-sm text-[18px] group-hover:text-accent transition-colors">Conditional negotiation demo</span>
+        <span class="hidden md:block md:col-span-5 text-[14px] text-ink-soft">A non standard use is shaped through structured deliberation and conditional agreement.</span>
+        <span class="col-span-3 md:col-span-1 text-right mono-label text-accent">Open &rarr;</span>
+      </a></li>
+
+      <!-- UPDATE·01 — Pilot updates (internal jump, no new window) -->
+      <li><a href="#pilots-and-cases" class="grid grid-cols-12 items-center gap-4 py-5 group">
+        <span class="col-span-2 md:col-span-1 idx" style="color:#C8442D;">UPDATE&middot;01</span>
+        <span class="col-span-7 md:col-span-5 display-sm text-[18px] group-hover:text-accent transition-colors">Pilot updates</span>
+        <span class="hidden md:block md:col-span-5 text-[14px] text-ink-soft">Short updates from the Incheon and Daegu pilots and live permissioning cases.</span>
+        <span class="col-span-3 md:col-span-1 text-right mono-label text-accent">Jump &darr;</span>
+      </a></li>
+
+      <!-- M·05 — Bloomberg Cities feature -->
+      <li><a href="https://bloombergcities.jhu.edu/news/city-putting-its-people-charge-public-space?utm_source=spark-newsletter&amp;utm_medium=email&amp;utm_campaign=spark"
+             target="_blank" rel="noopener noreferrer"
+             class="grid grid-cols-12 items-center gap-4 py-5 group">
+        <span class="col-span-2 md:col-span-1 idx text-accent">M&middot;05</span>
+        <span class="col-span-7 md:col-span-5 display-sm text-[18px] group-hover:text-accent transition-colors">Daegu &mdash; 2021 Bloomberg Mayors Challenge Champion City</span>
+        <span class="hidden md:block md:col-span-5 text-[14px] text-ink-soft">Daegu named a Champion City in the 2021 Bloomberg Philanthropies Global Mayors Challenge.</span>
+        <span class="col-span-3 md:col-span-1 text-right mono-label text-accent">Read &nearr;</span>
+      </a></li>
+
+      <!-- M·06 — Re-permissioning the city (foundational provocation) -->
+      <li><a href="https://provocations.darkmatterlabs.org/re-permissioning-the-city-unlocking-cities-growing-underutilised-spatial-assets-for-an-emergent-1550997714a4"
+             target="_blank" rel="noopener noreferrer"
+             class="grid grid-cols-12 items-center gap-4 py-5 group">
+        <span class="col-span-2 md:col-span-1 idx text-accent">M&middot;06</span>
+        <span class="col-span-7 md:col-span-5 display-sm text-[18px] group-hover:text-accent transition-colors">Re-permissioning the city</span>
+        <span class="hidden md:block md:col-span-5 text-[14px] text-ink-soft">Unlocking underused spatial assets for an emergent civic economy.</span>
+        <span class="col-span-3 md:col-span-1 text-right mono-label text-accent">Read &nearr;</span>
+      </a></li>
+
+      <!-- M·07 — Technical architecture note (coming soon) -->
+      <li><div class="grid grid-cols-12 items-center gap-4 py-5 opacity-60">
+        <span class="col-span-2 md:col-span-1 idx text-mute">M&middot;07</span>
+        <span class="col-span-7 md:col-span-5 display-sm text-[18px]">Technical architecture note</span>
+        <span class="hidden md:block md:col-span-5 text-[14px] text-ink-soft">A short technical note on the structure of the system, key components and decision interfaces.</span>
+        <span class="col-span-3 md:col-span-1 text-right mono-label text-mute">Soon</span>
+      </div></li>
+
+      <!-- M·08 — Responsible AI & governance note (coming soon) -->
+      <li><div class="grid grid-cols-12 items-center gap-4 py-5 opacity-60">
+        <span class="col-span-2 md:col-span-1 idx text-mute">M&middot;08</span>
+        <span class="col-span-7 md:col-span-5 display-sm text-[18px]">Responsible AI &amp; governance note</span>
+        <span class="hidden md:block md:col-span-5 text-[14px] text-ink-soft">A short note on how human oversight, explainability and review are designed into Civic Ledger.</span>
+        <span class="col-span-3 md:col-span-1 text-right mono-label text-mute">Soon</span>
+      </div></li>
+
+    </ul>
+  </div>
+</section>
+
+
+
+
+
+
+
+<!-- ============================================================
+     § 08  WORK WITH US  (role definitions)
+     ============================================================ -->
+<section id="contact" class="sec relative overflow-hidden bg-paper">
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute -top-32 -right-32 w-[420px] h-[420px] rounded-full" style="background: radial-gradient(closest-side, rgba(46,79,168,.10), transparent 70%);"></div>
+    <div class="absolute -bottom-40 -left-32 w-[480px] h-[480px] rounded-full" style="background: radial-gradient(closest-side, rgba(110,92,156,.10), transparent 70%);"></div>
+  </div>
+
+  <div class="relative max-w-page mx-auto px-6 md:px-10">
+    <div class="grid md:grid-cols-12 gap-10 md:gap-12 items-start">
+      <div class="md:col-span-7">
+        <div class="mono-label text-mute eyebrow">§ 08 · Contact</div>
+        <h2 class="display text-[40px] md:text-[64px] mt-5 leading-[1.02] max-w-[16ch]">
+          Work with <em>us</em>.
+        </h2>
+        <p class="mt-8 text-[16px] md:text-[17px] leading-relaxed text-ink-soft max-w-[60ch]">
+          Civic Ledger is actively seeking partners across four roles. Each
+          one is a distinct engagement pathway — we'd love to hear which
+          fits your work.
+        </p>
+        <p class="mt-4 text-[16px] md:text-[17px] leading-relaxed text-ink-soft max-w-[60ch]">
+          Civic Ledger is especially relevant for places facing underused
+          assets, fragmented permissioning workflows, unequal access to space
+          or growing demand for more responsive public services.
+        </p>
+
+        <!-- TODO: replace mailto with correct contact email -->
+        <a href="mailto:hello@darkmatterlabs.org" class="btn btn-primary mt-10">
+          Get in touch <span class="arr">→</span>
+        </a>
+      </div>
+
+      <aside class="md:col-span-5 md:pl-8 md:border-l hairline">
+        <div class="mono-label text-mute">Currently seeking</div>
+        <ul class="mt-5 space-y-2 text-[15px] text-ink-soft">
+          <li class="flex gap-3"><span class="font-mono text-accent pt-0.5">↳</span> Cities ready for a pilot deployment</li>
+          <li class="flex gap-3"><span class="font-mono text-accent pt-0.5">↳</span> Stewards &amp; place operators</li>
+          <li class="flex gap-3"><span class="font-mono text-accent pt-0.5">↳</span> Funders supporting civic AI infrastructure</li>
+          <li class="flex gap-3"><span class="font-mono text-accent pt-0.5">↳</span> Researchers in adaptive governance</li>
+        </ul>
+      </aside>
+    </div>
+
+    <!-- ─── Role definitions (engagement pathways) ─────────── -->
+    <div class="mt-16 pt-10 border-t hairline-2">
+      <div class="mono-label text-mute mb-8">Engagement pathways — four roles</div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+        <article class="civic-card p-7">
+          <div class="mono-label text-accent">Role · 01</div>
+          <h3 class="display-sm text-[20px] mt-3">Cities &amp; Government</h3>
+          <p class="mt-3 text-[14.5px] leading-relaxed text-ink-soft">
+            Workflow improvement, pilot deployment and system integration
+            across departments.
+          </p>
+          <div class="mt-5 pt-4 border-t hairline-2 mono-label text-accent">
+            Pilot · Integrate · Scale
+          </div>
+        </article>
+
+        <article class="civic-card p-7">
+          <div class="mono-label" style="color:#6E5C9C">Role · 02</div>
+          <h3 class="display-sm text-[20px] mt-3">Civic organisations &amp; stewards</h3>
+          <p class="mt-3 text-[14.5px] leading-relaxed text-ink-soft">
+            On-the-ground perspective, barrier validation and co-design of
+            shared responsibility structures.
+          </p>
+          <div class="mt-5 pt-4 border-t hairline-2 mono-label" style="color:#6E5C9C">
+            Test · Validate · Co-design
+          </div>
+        </article>
+
+        <article class="civic-card p-7">
+          <div class="mono-label" style="color:#C8442D">Role · 03</div>
+          <h3 class="display-sm text-[20px] mt-3">Funders &amp; philanthropy</h3>
+          <p class="mt-3 text-[14.5px] leading-relaxed text-ink-soft">
+            Support scaling and systemic change in how cities permission
+            non standard civic uses.
+          </p>
+          <div class="mt-5 pt-4 border-t hairline-2 mono-label" style="color:#C8442D">
+            Scale · Fund · Steward
+          </div>
+        </article>
+
+        <article class="civic-card p-7">
+          <div class="mono-label text-ink">Role · 04</div>
+          <h3 class="display-sm text-[20px] mt-3">Researchers &amp; academics</h3>
+          <p class="mt-3 text-[14.5px] leading-relaxed text-ink-soft">
+            Research collaboration, evaluation and design of governance
+            mechanisms.
+          </p>
+          <div class="mt-5 pt-4 border-t hairline-2 mono-label text-ink">
+            Research · Evaluate · Design
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     FOOTER (with sponsor / partner logo grid)
+     ============================================================ -->
+<footer class="border-t hairline bg-ink text-paper">
+  <div class="max-w-page mx-auto px-6 md:px-10 py-16">
+
+    <!-- Partner & sponsor logo grid (Wiki House style) -->
+    <div class="mb-14 pb-12 border-b border-paper/15">
+      <div class="flex flex-wrap items-baseline justify-between gap-3 mb-6">
+        <div class="mono-label text-paper/50">Partners &amp; supporters</div>
+        <span class="font-mono text-[11px] text-paper/40">Logos to be added</span>
+      </div>
+      <!-- TODO: replace each logo-cell with real partner SVG / IMG -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+        <div class="logo-cell">Daegu City</div>
+        <div class="logo-cell">Daegu Technopark</div>
+        <div class="logo-cell">Daegu Arts &amp; Culture</div>
+        <div class="logo-cell">Incheon City</div>
+        <div class="logo-cell">Dark Matter Labs</div>
+        <div class="logo-cell">Partner · 06</div>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-12 gap-10">
+      <div class="md:col-span-6">
+        <div class="display-sm text-[28px] md:text-[34px] leading-tight max-w-[24ch]">
+          Civic Ledger
+        </div>
+        <p class="mt-4 text-[15px] leading-relaxed text-paper/70 max-w-[44ch]">
+          A civic decision infrastructure for translating citizen intent into
+          structured, negotiable and auditable agreements.
+        </p>
+
+        <div class="mt-8 grid grid-cols-2 max-w-md text-[13px]">
+          <div>
+            <div class="mono-label text-paper/50">Built by</div>
+            <div class="mt-2 text-paper">Dark Matter Labs</div>
+          </div>
+          <div>
+            <div class="mono-label text-paper/50">Pilot partners</div>
+            <div class="mt-2 text-paper leading-snug">Incheon City · Daegu Metropolitan City via Daegu Technopark</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="md:col-span-3">
+        <div class="mono-label text-paper/50">Sections</div>
+        <ul class="mt-5 space-y-2 text-[14px]">
+          <li><a class="text-paper/85 hover:text-paper link-quiet" href="#what-it-is">What it is</a></li>
+          <li><a class="text-paper/85 hover:text-paper link-quiet" href="#how-it-works">How it works</a></li>
+          <li><a class="text-paper/85 hover:text-paper link-quiet" href="#pilots-and-cases">Pilots &amp; cases</a></li>
+          <li><a class="text-paper/85 hover:text-paper link-quiet" href="#writing">Writing</a></li>
+          <li><a class="text-paper/85 hover:text-paper link-quiet" href="#updates">Updates</a></li>
+          <li><a class="text-paper/85 hover:text-paper link-quiet" href="#contact">Contact</a></li>
+        </ul>
+      </div>
+
+      <div class="md:col-span-3">
+        <div class="mono-label text-paper/50">Status</div>
+        <p class="mt-5 text-[14px] text-paper/85 leading-relaxed">
+          Moving from proof of concept to pilot ready deployment.
+        </p>
+        <a href="mailto:hello@darkmatterlabs.org" class="mt-6 inline-block text-paper underline underline-offset-4 decoration-paper/40 hover:decoration-paper text-[14px]">
+          hello@darkmatterlabs.org
+        </a>
+        <p class="mt-2 mono-label text-paper/40">TODO · replace contact</p>
+      </div>
+    </div>
+
+    <div class="mt-14 pt-6 border-t border-paper/15 flex flex-wrap items-center justify-between gap-4 text-[12px] text-paper/50">
+      <div>© <span id="yr"></span> Civic Ledger · Dark Matter Labs</div>
+      <div class="font-mono">v 0.5 · Pilot ready</div>
+    </div>
+  </div>
+</footer>
+
+
+<script>
+  // ── Mobile menu ──────────────────────────────────────────
+  const menuBtn = document.getElementById('menuBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  if (menuBtn && mobileMenu) {
+    menuBtn.addEventListener('click', () => {
+      const open = mobileMenu.classList.toggle('menu-open');
+      menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    mobileMenu.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        mobileMenu.classList.remove('menu-open');
+        menuBtn.setAttribute('aria-expanded', 'false');
+      });
+    });
+  }
+
+  // ── Year ─────────────────────────────────────────────────
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  // ── Live banner: rotating ticker ─────────────────────────
+  (function () {
+    const items = document.querySelectorAll('.ticker-item');
+    if (items.length < 2) return;
+    let i = 0;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) return;
+    setInterval(() => {
+      items[i].classList.remove('is-active');
+      i = (i + 1) % items.length;
+      items[i].classList.add('is-active');
+    }, 4200);
+  })();
+
+  // ── Protocol: active dot rotation around the circle ─────
+  (function () {
+    const steps = document.querySelectorAll('#protocol-circle .circle-step');
+    const centerG = document.getElementById('protocol-center');
+    const numEl   = document.getElementById('active-step-num');
+    const nameEl  = document.getElementById('active-step-name');
+    if (!steps.length || !numEl || !nameEl) return;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) return;
+    let i = 0;
+    setInterval(() => {
+      if (centerG) centerG.style.opacity = '0';
+      setTimeout(() => {
+        steps[i].classList.remove('is-active');
+        i = (i + 1) % steps.length;
+        steps[i].classList.add('is-active');
+        numEl.textContent  = 'STEP ' + steps[i].dataset.num;
+        nameEl.textContent = steps[i].dataset.name;
+        if (centerG) centerG.style.opacity = '1';
+      }, 250);
+    }, 1800);
+  })();
+</script>
+
+</body>
+</html>
